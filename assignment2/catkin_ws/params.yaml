@@ -1,0 +1,12 @@
+background_b: 255
+background_g: 86
+background_r: 150
+rosdistro: 'kinetic
+
+  '
+roslaunch:
+  uris: {host_kala__41799: 'http://kala:41799/'}
+rosversion: '1.12.12
+
+  '
+run_id: 479a1ca6-fcd9-11e7-b753-b8e8562c86e2
