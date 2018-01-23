@@ -1,0 +1,12 @@
+package gps_packet;
+
+
+struct gps_packet_t
+{
+    int64_t timestamp;
+    double  lat;
+    double  lon;
+    double  alt;
+    double  utm_x;
+    double  utm_y;
+}
