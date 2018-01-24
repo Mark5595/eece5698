@@ -1,0 +1,5 @@
+# Lab 1: GPS Drivers in LCM
+
+[NMEA Documentation][Nema Doc]
+
+[Nema Doc]: http://usglobalsat.com/store/downloads/NMEA_commands.pdf
