@@ -33,7 +33,8 @@ class Gps(object):
                     self.lcm.publish("Gps", self.packet.encode())
             except Exception as e:
                 print 'Gps ERROR (' + line + ')'
-                print e + "\n"
+                print e 
+                print
     
     def packet_from_response(self, vals):
         """
