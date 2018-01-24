@@ -39,7 +39,7 @@ class Gps(object):
         """
         Creates a gps_packet_t from a serial line response. 
         """
-        self.packet.timestamp = int(vals[1])
+        self.packet.timestamp = float(vals[1])
         self.packet.lat = float(vals[2])
         self.packet.lon = float(vals[4])
         self.packet.alt = float(vals[9])

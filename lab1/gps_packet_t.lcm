@@ -3,7 +3,7 @@ package gps_packet;
 
 struct gps_packet_t
 {
-    int64_t timestamp;
+    double  timestamp;
     double  lat;
     double  lon;
     double  alt;
