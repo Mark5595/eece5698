@@ -1,11 +1,9 @@
 #!/usr/bin/env bash
 #sudo chmod 666 /dev/ttyUSB0
 export CLASSPATH=$PWD
-lcm-logger --auto-split-hours=1 -s ./data/lcm-log-%F-%T & lcm-logger -s ./log/lcm-log-%F-%T &
+#lcm-logger --auto-split-hours=1 -s ./data/lcm-log-%F-%T & 
+lcm-logger -s ./log/lcm-log-%F-%T &
 lcm-spy &
-#./thruster_animatics_c5 /dev/ttyS11 THR_MAIN 32.5 &
-#Thruster
-#./fins_pololu /dev/ttyS10 & #./depth_paro /dev/ttyS1 & #./umodem /dev/ttyS14 & ./imu_xsens /dev/ttyUSB0 #./bmp /dev/ttyUSB0 #./ct_nbosi /dev/ttyS6 & #./dvl_rdi /dev/ttyS4 #DVL #./state_estimator &
 # GPS Driver
-./gps_driver ~/dev/ttyUSB0
-kill%1%2 #%3 %4%5%6%7%8%9
+./gps_driver /dev/ttyUSB0
+kill %1 %2 #%3 #%4%5%6%7%8%9

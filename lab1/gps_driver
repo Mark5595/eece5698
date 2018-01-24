@@ -40,22 +40,41 @@ class Gps(object):
         """
         Creates a gps_packet_t from a serial line response. 
         """
-        self.packet.timestamp = float(vals[1])
-        self.packet.lat = float(vals[2])
-        self.packet.lon = float(vals[4])
-        self.packet.alt = float(vals[9])
+        def _extract_float(value):
+            if value == "":
+                return 0
+            else:
+                return float(value)
         
-        try:
-            utm_repr = utm.from_latlon(self.packet.lat, self.packet.lon)
-            self.packet.utm_x = utm_repr(0)
-            self.packet.utm_y = utm_repr(1)
-        except Exception as e: 
-            print "Error trying to convert to utm: " + e
+        self.packet.timestamp = _extract_float(vals[1])
+        self.packet.lat = _extract_float(vals[2])
+        self.packet.lon = _extract_float(vals[4])
+        self.packet.alt = _extract_float(vals[9])
 
+
+        try:
+            utm_repr = utm.from_latlon(
+                    self._coord_to_decimal(self.packet.lat), 
+                    self._coord_to_decimal(self.packet.lon))
+            self.packet.utm_x = utm_repr[0]
+            self.packet.utm_y = utm_repr[1]
+        except Exception as e: 
+            print "Error trying to convert to utm: " + str(e)
+            print "Lat: " + str(self.packet.lat)
+            print "Lon: " + str(self.packet.lon)
+
+    def _coord_to_decimal(self, coord):
+        degrees = coord/100
+        decimal = (coord % 100)/60
+        return degrees + decimal
 
 if __name__ == "__main__":
-    if len(sys.argv) != 2:
+    if len(sys.argv) == 1:
+        myGps = Gps("/dev/ttyUSB0")
+    elif len(sys.argv) != 2:
         print "Usage: %s <serial_port>\n" % sys.argv[0]
         sys.exit(0)
-    myGps = Gps(sys.argv[1])
+    else:
+        myGps = Gps(sys.argv[1])
+    
     myGps.readloop()
