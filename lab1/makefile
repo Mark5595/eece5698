@@ -1,6 +1,6 @@
 
 
-run:
+run: build
 	@sudo ./launch_lcm.sh
 
 build:
