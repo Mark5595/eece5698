@@ -7,14 +7,14 @@ import lcm
 import time
 import serial
 import utm
-import gps_packet
+from my_types import gps_packet_t
 
 
 class Gps(object):
     def __init__(self, port_name):
         self.port = serial.Serial(port_name, 4800, timeout=1.)  # 4800-N-8-1
         self.lcm = lcm.LCM("udpm://?ttl=12")
-        self.packet = gps_packet.gps_packet_t()
+        self.packet = gps_packet_t()
         print 'Gps: Initialization'
         line = self.port.readline()
         try:
@@ -30,7 +30,8 @@ class Gps(object):
                 if vals[0] == "$GPGGA":
                     print "Received Message..." + line
                     self.packet_from_response(vals)
-                    self.lcm.publish("Gps", self.packet.encode())
+                    self.print_packet(self.packet)
+                    self.lcm.publish("GPS Location", self.packet.encode())
             except Exception as e:
                 print 'Gps ERROR (' + line + ')'
                 print e 
@@ -42,7 +43,7 @@ class Gps(object):
         """
         def _extract_float(value):
             if value == "":
-                return 0
+                return 0.0
             else:
                 return float(value)
         
@@ -62,6 +63,18 @@ class Gps(object):
             print "Error trying to convert to utm: " + str(e)
             print "Lat: " + str(self.packet.lat)
             print "Lon: " + str(self.packet.lon)
+        
+    def print_packet(self, packet):
+        print "GPS Packet:"
+        print "***************"
+        print "timestamp: " + str(packet.timestamp)
+        print "lat: " + str(packet.lat)
+        print "lon: " + str(packet.lon)
+        print "alt: " + str(packet.alt)
+        print "utm_x: " + str(packet.utm_x)
+        print "utm_y: " + str(packet.utm_y)
+        print "***************"
+        print ""
 
     def _coord_to_decimal(self, coord):
         degrees = coord/100
