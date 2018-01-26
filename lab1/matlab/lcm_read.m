@@ -5,7 +5,7 @@ javaaddpath /usr/local/share/java/lcm.jar
 % Let’s assume the logging file is lcm-l.02 in the dir below
 % open log file for reading
 
-log_file = lcm.logging.Log('/home/clay/Desktop/lcm-l.02', 'r'); 
+log_file = lcm.logging.Log('Users/Andrew/Dropbox/Northeastern/2018\ Spring/eece5698/lab1/data/30minInplace', 'r'); 
 
 % now read the file 
 % here we are assuming that the channel we are interested in is RDI. Your channel 
@@ -19,7 +19,7 @@ while true
    
    % channel name is in ev.channel
    % there may be multiple channels but in this case you are only interested in RDI channel
-   if strcmp(ev.channel, 'RDI')
+   if strcmp(ev.channel, 'GPS Location')
  
      % build rdi object from data in this record
       rdi = seabed_lcm.rdi_t(ev.data);
