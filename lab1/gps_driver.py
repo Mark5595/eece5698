@@ -51,7 +51,11 @@ class Gps(object):
         self.packet.lat = _extract_float(vals[2])
         self.packet.lon = _extract_float(vals[4])
         self.packet.alt = _extract_float(vals[9])
-
+        
+        if vals[3] == 'S':
+            self.packet.lat = -self.packet.lat;
+        if vals[5] == 'W':
+            self.packet.lon = -self.packet.lon;
 
         try:
             utm_repr = utm.from_latlon(
