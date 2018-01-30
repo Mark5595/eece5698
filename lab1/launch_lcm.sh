@@ -5,6 +5,6 @@ export CLASSPATH=$PWD/my_types.jar
 lcm-logger -s ./log/lcm-log-%F-%T &
 lcm-spy &
 # GPS Driver
-./gps_driver /dev/ttyUSB0
+./gps_driver.py /dev/ttyUSB0
 #./send-message.py 
 kill %1 %2 #%3 #%4%5%6%7%8%9

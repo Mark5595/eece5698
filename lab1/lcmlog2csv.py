@@ -6,7 +6,7 @@ import utm
 
 from my_types import gps_packet_t
 
-def translate():
+def translate(reader_conversion):
     if len(sys.argv) < 2:
         sys.stderr.write("usage: read-log <logfile>\n")
         sys.exit(1)
@@ -18,7 +18,12 @@ def translate():
         for event in log:
             if event.channel == "GPS Location":
                 msg = gps_packet_t.decode(event.data)
-                write_packet(csvfile, msg)
+
+                if reader_conversion:
+                    write_packet_w_utm_conversion(csvfile, msg)
+                else:
+                    write_packet(csvfile, msg)
+
                 print_packet(msg)
 
 def write_packet(file_name, msg):
@@ -26,15 +31,19 @@ def write_packet(file_name, msg):
     writer.writerow([msg.timestamp, msg.lat, msg.lon, msg.alt, msg.utm_x, msg.utm_y])
 
 def write_packet_w_utm_conversion(file_name, msg):
-    utm_repr = coord_to_utm(msg.lat, msg.lon)
+    print "writing w/ conversion"
+    utm_repr = coord_to_utm(msg.lat, -msg.lon)
     
+    msg.utm_x = utm_repr[0];
+    msg.utm_y = utm_repr[1];
+
     writer = csv.writer(file_name, delimiter=',', quoting=csv.QUOTE_MINIMAL)
     writer.writerow([msg.timestamp, msg.lat, msg.lon, msg.alt, utm_repr[0], utm_repr[1]])
 
 def coord_to_utm(lat, lon):
     utm_repr = utm.from_latlon(
-        gps_driver.Gps._coord_to_decimal(lat),
-        gps_driver.Gps._coord_to_decimal(lon))
+        gps_driver._coord_to_decimal(lat),
+        gps_driver._coord_to_decimal(lon))
             
     return utm_repr[0], utm_repr[1]
 
@@ -49,4 +58,5 @@ def print_packet(msg):
     print("")
 
 if __name__ == "__main__":
-    translate()
+    translate(1)
+    #translate(0)

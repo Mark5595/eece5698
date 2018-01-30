@@ -55,8 +55,8 @@ class Gps(object):
 
         try:
             utm_repr = utm.from_latlon(
-                    self._coord_to_decimal(self.packet.lat), 
-                    self._coord_to_decimal(self.packet.lon))
+                    _coord_to_decimal(self.packet.lat), 
+                    _coord_to_decimal(self.packet.lon))
             self.packet.utm_x = utm_repr[0]
             self.packet.utm_y = utm_repr[1]
         except Exception as e: 
@@ -76,10 +76,10 @@ class Gps(object):
         print "***************"
         print ""
 
-    def _coord_to_decimal(self, coord):
-        degrees = coord//100
-        decimal = (coord % 100)/60
-        return degrees + decimal
+def _coord_to_decimal(coord):
+    degrees = coord//100
+    decimal = (coord % 100)/60
+    return degrees + decimal
 
 if __name__ == "__main__":
     if len(sys.argv) == 1:
