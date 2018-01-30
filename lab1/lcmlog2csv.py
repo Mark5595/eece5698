@@ -1,6 +1,8 @@
 import sys
 import lcm
 import csv
+import gps_driver
+import utm
 
 from my_types import gps_packet_t
 
@@ -22,6 +24,19 @@ def translate():
 def write_packet(file_name, msg):
     writer = csv.writer(file_name, delimiter=',', quoting=csv.QUOTE_MINIMAL)
     writer.writerow([msg.timestamp, msg.lat, msg.lon, msg.alt, msg.utm_x, msg.utm_y])
+
+def write_packet_w_utm_conversion(file_name, msg):
+    utm_repr = coord_to_utm(msg.lat, msg.lon)
+    
+    writer = csv.writer(file_name, delimiter=',', quoting=csv.QUOTE_MINIMAL)
+    writer.writerow([msg.timestamp, msg.lat, msg.lon, msg.alt, utm_repr[0], utm_repr[1]])
+
+def coord_to_utm(lat, lon):
+    utm_repr = utm.from_latlon(
+        gps_driver.Gps._coord_to_decimal(lat),
+        gps_driver.Gps._coord_to_decimal(lon))
+            
+    return utm_repr[0], utm_repr[1]
 
 def print_packet(msg):
     print("Message:")

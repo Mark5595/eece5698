@@ -77,7 +77,7 @@ class Gps(object):
         print ""
 
     def _coord_to_decimal(self, coord):
-        degrees = coord/100
+        degrees = coord//100
         decimal = (coord % 100)/60
         return degrees + decimal
 
