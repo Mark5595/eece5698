@@ -58,5 +58,5 @@ def print_packet(msg):
     print("")
 
 if __name__ == "__main__":
-    translate(1)
-    #translate(0)
+    #translate(1)
+    translate(0)
