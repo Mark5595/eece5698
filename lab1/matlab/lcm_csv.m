@@ -1,12 +1,13 @@
 
+
 function lcm_csv()
     % Main file
     inPlaceIndoors = '../data/10minInPlaceIndoors.csv';
     inPlaceOutdoors = '../data/10MinInPlaceOutdoors.csv';
     lineWalk = '../data/2MinWalk.csv';
     
-    %plot_file(inPlaceIndoors, '10 Minutes In Place (Indoors)', 0);
-    %plot_file(inPlaceOutdoors, '10 Minutes In Place (Outdoors)', 0);
+    plot_file(inPlaceIndoors, '10 Minutes In Place (Indoors)', 0);
+    plot_file(inPlaceOutdoors, '10 Minutes In Place (Outdoors)', 0);
     plot_file(lineWalk, '2 Minutes Walking in a Line', 1);
 end
 
@@ -97,13 +98,17 @@ function plot_linear_regression(utm_vectors, title)
     x = utm_vectors(:, 1);
     y = utm_vectors(:, 2);
     
-    b = x\y;
-    bfit = b*x;
-    
+    X = [ones(length(x),1) x];
+    b2 = X\y
+    bfit_intercept = X*b2;
+
     hold on
-    plot(x, bfit, 'b')
+    plot(x, bfit_intercept, 'b')
     legend('Data','Average', 'Slope');
     hold off
+
+    mdl = fitlm(x, y)
+
 end
 
 
