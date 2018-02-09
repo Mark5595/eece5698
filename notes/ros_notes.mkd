@@ -1,0 +1,16 @@
+
+# Catkin Build Process
+- Enter directory to create workspace
+- run `catkin_make`
+- run `source devel/setup.bash`
+
+# Building a Package
+- enter src directory
+- run `catkin_create_pkg <package_name> [depend1] [depend2] ... [dependN]`
+- return to workspace home directory (`cd ..`)
+- run `catkin_make` again to "install" the package
+
+## Editing dependencies of the package
+In order to edit the dependices of a create package, you need to make changes 
+in two different files. In the package directory, edit both the .xml file and the
+CMakeList.txt file w/ updated/new dependencies
