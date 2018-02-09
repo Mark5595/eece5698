@@ -1,0 +1,118 @@
+#!/usr/bin/env python
+
+import sys
+import time
+import socket 
+import utm
+
+import rospy
+from sensor_msgs.msg import NavSatFix
+from nav_msgs.msg import Odometry
+
+def dummy_gpgga_data():
+    return "$GPGGA,123519,4807.038,N,01131.000,E,1,08,0.9,545.4,M,46.9,M,,*47"
+
+class Rtk_Gps(object):
+    def __init__(self):
+        # TCP Read connection
+        # host = rospy.get_param('~host', 'x.x.x.x')
+        # port = rospy.get_param('~port', 3000)
+        # self.s = socket.socket()
+        # self.s.connect((host, port))
+        
+        # Packet Types
+        self.nav_sat_pkt = NavSatFix()
+        self.utm_pkt = Odometry()
+
+        # Talkers
+        self.fix_chatter = rospy.Publisher('/rtk_fix', NavSatFix, queue_size = 10)
+        self.utm_chatter = rospy.Publisher('/utm_fix', Odometry, queue_size = 10)
+        rospy.init_node('talker', anonymous=True)
+        
+        self.rate = rospy.Rate(10) # 10Hz
+
+    def read_loop(self):
+        """
+        Main event loop: reads from the TCP connection
+        """
+        while not rospy.is_shutdown():
+            #line = self.s.recv(1024)
+            line = dummy_gpgga_data()
+
+            try:
+                vals = [x for x in line.split(',')]
+                if vals[0] == "$GPGGA":
+                    print "Received Message..." + line
+                    self.set_packets(vals)
+                    self.print_packet()
+                    
+                    self.fix_chatter.publish(self.nav_sat_pkt)
+                    #self.utm_chatter.publish(self.utm_pkt)
+
+            except Exception as e:
+                print 'GPS ERROR (' + line + ')'
+                print e
+                print
+            
+            # Block to keep a set rate. 
+            self.rate.sleep()
+
+    def set_packets(self, vals):
+        """
+        Creates a gps_packet_t from a serial line response. 
+        """
+        def _extract_float(value):
+            if value == "":
+                return 0.0
+            else:
+                return float(value)
+        
+        def _set_nav_sat():
+            #self.packet.timestamp = _extract_float(vals[1])
+            self.nav_sat_pkt.latitude = _extract_float(vals[2])
+            self.nav_sat_pkt.longitude = _extract_float(vals[4])
+            self.nav_sat_pkt.altitude = _extract_float(vals[9])
+            
+            # Invert if necessary
+            if vals[3] == 'S':
+                self.nav_sat_pkt.latitude *= -1
+            if vals[5] == 'W':
+                self.nav_sat_pkt.longitude *= -1
+        def _set_utm():
+            try:
+                utm_repr = utm.from_latlon(
+                        _coord_to_decimal(self.nav_sat_pkt.latitude), 
+                        _coord_to_decimal(self.nav_sat_pkt.longitude))
+                
+                self.utm_pkt.pose.pose.position.x = utm_repr[0]
+                self.utm_pkt.pose.pose.position.y = utm_repr[1]
+
+            except Exception as e: 
+                print "Error trying to convert to utm: " + str(e)
+                print "Lat: " + str(self.packet.lat)
+                print "Lon: " + str(self.packet.lon)
+
+        _set_nav_sat()
+        _set_utm()
+
+    def print_packet(self):
+        print "GPS Packet:"
+        print "***************"
+        #print "timestamp: " + str(packet.timestamp)
+        print "lat: " + str(self.nav_sat_pkt.latitude)
+        print "lon: " + str(self.nav_sat_pkt.longitude)
+        print "alt: " + str(self.nav_sat_pkt.altitude)
+        print "utm_x: " + str(self.utm_pkt.pose.pose.position.x)
+        print "utm_y: " + str(self.utm_pkt.pose.pose.position.y)
+        print "***************"
+        print ""
+
+def _coord_to_decimal(coord):
+    degrees = coord//100
+    decimal = (coord % 100)/60
+    return degrees + decimal
+
+if __name__ == "__main__":
+    myGps = Rtk_Gps()
+    
+    myGps.read_loop()
