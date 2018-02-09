@@ -1,4 +1,6 @@
 **.pyc
 **.swp
+**build
+**devel
 py_cache/
 lcm-1.3.1
