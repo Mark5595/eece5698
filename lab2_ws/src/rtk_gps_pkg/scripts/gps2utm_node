@@ -22,6 +22,7 @@ class rtk_gps_server():
         utm_pkt = self._utm_from_rtk(data)
 
         self.utm_pub.publish(utm_pkt)
+        rospy.loginfo(utm_pkt)
 
     def _utm_from_rtk(self, data):
         """

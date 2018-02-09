@@ -14,11 +14,14 @@ def dummy_gpgga_data():
 
 class Rtk_Gps(object):
     def __init__(self):
+        rospy.init_node('talker', anonymous=True)
+        
         # TCP Read connection
-        # host = rospy.get_param('~host', 'x.x.x.x')
-        # port = rospy.get_param('~port', 3000)
-        # self.s = socket.socket()
-        # self.s.connect((host, port))
+        host = rospy.get_param('~host', 'x.x.x.x')
+        port = rospy.get_param('~port', 3000)
+        print (host, port)
+        self.s = socket.socket()
+        self.s.connect((host, port))
         
         # Packet Types
         self.nav_sat_pkt = NavSatFix()
@@ -27,17 +30,16 @@ class Rtk_Gps(object):
         # Talkers
         self.fix_chatter = rospy.Publisher('/rtk_fix', NavSatFix, queue_size = 10)
         self.utm_chatter = rospy.Publisher('/utm_fix', Odometry, queue_size = 10)
-        rospy.init_node('talker', anonymous=True)
         
-        self.rate = rospy.Rate(10) # 10Hz
+        #self.rate = rospy.Rate(10) # 10Hz
 
     def read_loop(self):
         """
         Main event loop: reads from the TCP connection
         """
         while not rospy.is_shutdown():
-            #line = self.s.recv(1024)
-            line = dummy_gpgga_data()
+            line = self.s.recv(1024)
+            #line = dummy_gpgga_data()
 
             try:
                 vals = [x for x in line.split(',')]
@@ -47,6 +49,7 @@ class Rtk_Gps(object):
                     self.print_packet()
                     
                     self.fix_chatter.publish(self.nav_sat_pkt)
+                    rospy.loginfo(self.nav_sat_pkt)
                     #self.utm_chatter.publish(self.utm_pkt)
 
             except Exception as e:
@@ -55,7 +58,7 @@ class Rtk_Gps(object):
                 print
             
             # Block to keep a set rate. 
-            self.rate.sleep()
+            # self.rate.sleep()
 
     def set_packets(self, vals):
         """
