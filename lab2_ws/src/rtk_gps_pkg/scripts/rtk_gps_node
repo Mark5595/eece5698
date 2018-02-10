@@ -14,22 +14,27 @@ def dummy_gpgga_data():
 
 class Rtk_Gps(object):
     def __init__(self):
+        # Talkers
+        self.fix_chatter = rospy.Publisher('/rtk_fix', NavSatFix, queue_size = 10)
+        self.utm_chatter = rospy.Publisher('/utm_fix', Odometry, queue_size = 10)
         rospy.init_node('talker', anonymous=True)
-        
-        # TCP Read connection
-        host = rospy.get_param('~host', 'x.x.x.x')
-        port = rospy.get_param('~port', 3000)
-        print (host, port)
-        self.s = socket.socket()
-        self.s.connect((host, port))
         
         # Packet Types
         self.nav_sat_pkt = NavSatFix()
         self.utm_pkt = Odometry()
 
-        # Talkers
-        self.fix_chatter = rospy.Publisher('/rtk_fix', NavSatFix, queue_size = 10)
-        self.utm_chatter = rospy.Publisher('/utm_fix', Odometry, queue_size = 10)
+        # TCP Read connection
+        host = rospy.get_param('~host', '172.20.10.8')
+        port = rospy.get_param('~port', 3000)
+        self.s = socket.socket()
+
+        try:
+            rospy.loginfo("Attempting to connect to {}".format(host, port))
+            self.s.connect((host, port))
+            rospy.loginfo("Connected to {}".format(host, port))
+        except socket.error as e:
+            rospy.logerr("Error connecting to %s: %s", str((host, port)), e)
+            assert(0)
         
         #self.rate = rospy.Rate(10) # 10Hz
 
@@ -37,25 +42,28 @@ class Rtk_Gps(object):
         """
         Main event loop: reads from the TCP connection
         """
+        def process_line(line):
+            vals = [x for x in line.split(',')]
+            if vals[0] == "$GPGGA":
+                rospy.logwarn(line)
+                rospy.logdebug("Received Message..." + line)
+                self.set_packets(vals)
+                self.print_packet()
+                
+                self.fix_chatter.publish(self.nav_sat_pkt)
+                rospy.loginfo(self.nav_sat_pkt)
+                #self.utm_chatter.publish(self.utm_pkt)
+        
         while not rospy.is_shutdown():
-            line = self.s.recv(1024)
+            lines = self.s.recv(1024)
+            #rospy.logwarn(lines)
             #line = dummy_gpgga_data()
-
+            #rospy.loginfo(line)
             try:
-                vals = [x for x in line.split(',')]
-                if vals[0] == "$GPGGA":
-                    print "Received Message..." + line
-                    self.set_packets(vals)
-                    self.print_packet()
-                    
-                    self.fix_chatter.publish(self.nav_sat_pkt)
-                    rospy.loginfo(self.nav_sat_pkt)
-                    #self.utm_chatter.publish(self.utm_pkt)
+                responses = [process_line(line) for line in lines.split('\n')]
 
             except Exception as e:
-                print 'GPS ERROR (' + line + ')'
-                print e
-                print
+                rospy.loger('GPS ERROR (' + line + '): ' + str(e))
             
             # Block to keep a set rate. 
             # self.rate.sleep()
