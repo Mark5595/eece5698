@@ -11,11 +11,14 @@ def translate():
     bag = rosbag.Bag(sys.argv[1], "r")
     
     with open(sys.argv[1] + ".csv", "w+") as csvfile:
-    
         for topic, msg, t in bag.read_messages(topics=['/rtk_fix', '/utm_fix']):
-            print msg
+            if topic == '/rtk_fix':
+                process_rtk(csvfile, msg)
+            elif topic == '/utm_fix':
+                process_utm(csvfile, msg)
+            
 
-def write_packet(file_name, msg):
+def process_rtk(file_name, msg):
     writer = csv.writer(file_name, delimiter=',', quoting=csv.QUOTE_MINIMAL)
     writer.writerow([msg.timestamp, msg.lat, msg.lon, msg.alt, msg.utm_x, msg.utm_y])
 
