@@ -2,14 +2,21 @@
 
 function ros_csv()
     % Main file
-    inplace = get_file_name('inplace')
-    smallSquare = get_file_name('smallSquare')
-    smallSquare = get_file_name('largeSquare')
+    inplace     = get_file_name('partial_obstruction/inplace')
+    smallSquare = get_file_name('partial_obstruction/smallSquare')
+    largeSquare = get_file_name('partial_obstruction/largeSquare')
     
-    plot_file(inplace, '10 Minutes In Place (Outdoors)', 0);
-    plot_file(smallSquare, 'Small Square (Outdoors)', 0);
-    plot_file(largeSquare, 'Large Square (Outdoors)', 0);
-    %plot_file(lineWalk, '2 Minutes Walking in a Line', 1);
+    clear_inplace       = get_file_name('data_clear/inplace_clear')
+    clear_smallSquare   = get_file_name('data_clear/smallSquare_clear')
+    clear_largeSquare   = get_file_name('data_clear/largeSquare_clear')
+    
+    plot_file(inplace, 'Partial Obstruction: 10 Minutes In Place (Outdoors)', 0);
+    plot_file(smallSquare, 'Partial Obstruction: Small Square (Outdoors)', 0);
+    plot_file(largeSquare, 'Partial Obstruction: Large Square (Outdoors)', 0);
+    
+    plot_file(clear_inplace,        'No Obstruction: 10 Minutes In Place (Outdoors)', 0);
+    plot_file(clear_smallSquare,    'No Obstruction: Small Square (Outdoors)', 0);
+    plot_file(clear_largeSquare,    'No Obstruction: Large Square (Outdoors)', 0);
 end
 
 function filename = get_file_name(type)
@@ -24,7 +31,7 @@ function plot_file(input_file, my_title, linear)
     format_spec = '%s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s';
     
     % This function takes an input file name and plots the data
-    data = csvread(input_file)
+    data = csvread(input_file);
     %data = data(2:, 12:13)
     utm_vectors = extract_utm(data);
 
@@ -67,7 +74,7 @@ end
 function plot_utm_vectors(utm_vectors)
     % plots the xy vectors
     utm_vectors = scale_utm(utm_vectors);
-    plot(utm_vectors(:, 1), utm_vectors(:, 2), 'r');
+    plot(utm_vectors(:, 1), utm_vectors(:, 2), 'r*');
 end
 
 function plot_vector_averages(utm_vectors)
@@ -99,7 +106,7 @@ function plot_histogram(utm_vectors, name)
     subplot(2, 1, 2);
     hist(average_y_scaled);
     title(['Histogram of ' name ' [Y axis]'])
-    xlabel('UTM X Value (M)')
+    xlabel('UTM Y Value (M)')
     ylabel('Number of Points')
 
 end
