@@ -1,0 +1,51 @@
+#!/usr/bin/env python
+
+import utm
+
+import rospy
+from sensor_msgs.msg import NavSatFix
+from nav_msgs.msg import Odometry
+from rtk_gps_node import _coord_to_decimal
+
+class rtk_gps_server():
+    
+    def __init__(self):
+        rospy.init_node("listener", anonymous = True)
+        self.rtk_sub = rospy.Subscriber("/rtk_fix", NavSatFix, self._nav_sat_callback)
+        self.utm_pub = rospy.Publisher("/utm_fix", Odometry, queue_size = 10)
+
+    def _nav_sat_callback(self, data):
+        """
+        Given the NavSatFix data, construct the utm equivalent and publish it
+        through utm_pub
+        """
+        utm_pkt = self._utm_from_rtk(data)
+
+        self.utm_pub.publish(utm_pkt)
+        rospy.loginfo(utm_pkt)
+
+    def _utm_from_rtk(self, data):
+        """
+        Create a Odometry packet from a given NavSatFix packet
+        """
+        utm_pkt = Odometry()
+        
+        try:
+            utm_repr = utm.from_latlon(
+                    _coord_to_decimal(data.latitude),
+                    _coord_to_decimal(data.longitude))
+
+            utm_pkt.pose.pose.position.x = utm_repr[0]
+            utm_pkt.pose.pose.position.y = utm_repr[1]
+        
+        except Exception as e:
+            print "Error tring to convert to utm: " + str(e)
+        
+        return utm_pkt
+
+    def run(self):
+        rospy.spin()
+
+if __name__ == "__main__":
+    myServer = rtk_gps_server()
+    myServer.run()
