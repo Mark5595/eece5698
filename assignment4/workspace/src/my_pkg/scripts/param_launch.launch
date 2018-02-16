@@ -1,0 +1,10 @@
+<launch>
+    <arg name="host" default="172.20.10.8"/>
+    <arg name="port" default="3000"/>
+
+    <node pkg="my_pkg" type="my_node" name="my_node_prints_stuff">
+        <param name="host" value="$(arg host)"/>
+        <param name="port" value="$(arg port)"/>
+    </node>
+
+</launch>
