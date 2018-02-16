@@ -2,5 +2,6 @@
 **.swp
 **build
 **devel
+**install
 py_cache/
 lcm-1.3.1
