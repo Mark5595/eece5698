@@ -1,0 +1,12 @@
+package my_types;
+
+
+struct gps_packet_t
+{
+    float timestamp;
+    float lat;
+    float lon;
+    float alt;
+    float utm_x;
+    float utm_y;
+}

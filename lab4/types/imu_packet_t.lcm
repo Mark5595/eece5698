@@ -1,0 +1,19 @@
+package my_types;
+
+
+struct imu_packet_t
+{
+    float timestamp;
+    float yaw;
+    float pitch;
+    float roll;
+    float mag_x;
+    float mag_y;
+    float mag_z;
+    float accel_x;
+    float accel_y;
+    float accel_z;
+    float gyro_x;
+    float gyro_y;
+    float gyro_z;
+}

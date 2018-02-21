@@ -1,0 +1,9 @@
+# Lab 1: GPS Drivers in LCM
+
+## Usage:
+Run with `sudo ./launch_lcm.sh'
+
+
+[NMEA Documentation][Nema Doc]
+
+[Nema Doc]: http://usglobalsat.com/store/downloads/NMEA_commands.pdf
