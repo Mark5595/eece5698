@@ -1,10 +1,12 @@
 
 
-function lcm_csv()
+function csv_in_place_analysis()
     % Main file
     Points_1500 = '../data/1000_pts_in_place_imu_reading.csv';
+    Points_car = '../data/2000PointsInPlaceInCar/imu_reading.csv';
     
-    plot_file(Points_1500, '1500 points in place IMU');
+    %plot_file(Points_1500, '1500 points in place IMU');
+    plot_file(Points_car, '2000 points in Car IMU');
 end
 
 function plot_file(input_file, my_title)
