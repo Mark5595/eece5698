@@ -16,8 +16,45 @@ function gps_vs_imu()
     ylabel('Y (M)');
     legend('show');
 
+    % xc
+    raw_data = csvread(driveImu);
+    data = generate_data_cube(raw_data);
     vel_comparision(v_gps, v_imu);
+    find_xc(v_gps, data);
+end
 
+function find_xc(gps, imu)
+    % 𝑦̈𝑜𝑏𝑠 =𝑌+𝜔𝑋+𝜔̇𝑥𝑐
+    % (yobs - Y - wX)/delt_w
+
+    y_obs = interp(diff(gps.y), 40);
+    x_obs = interp(diff(gps.x), 40);
+
+    w = imu.ypr.x(1:80000);
+    delt_w = imu.gyro.z(1:80000);
+    
+    delt_x = cumtrapz(imu.accel.x);
+    delt_y = cumtrapz(imu.accel.y);
+    
+    delt_x = delt_x(1:80000);
+    delt_y = delt_y(1:80000);
+    
+    %size(delt_x)
+    %size(y_obs)
+    %size(imu.accel.y)
+    %size(w)
+
+    xc = (x_obs - imu.accel.y(1:80000) - w.*delt_x)./delt_w;
+    xc2 = (y_obs - imu.accel.x(1:80000) + w.*delt_y)./(-(delt_w.^2));
+    
+    
+
+    hold on;
+    xc(1)/45
+    xc2(1)/45
+    plot(xc)
+    plot(xc2)
+    hold off;
 end
 
 function vel_comparision(v_gps, v_imu)

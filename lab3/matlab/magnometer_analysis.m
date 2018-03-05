@@ -12,16 +12,39 @@ function magnetometer_analysis()
 end
 
 
+
 function plot_file(input_file, my_title)
     display(['Plotting ' my_title])
     % This function takes an input file name and plots the data
     raw_data = csvread(input_file);
     data = generate_data_cube(raw_data);
-    data = callibrate_data(data);
+    %data = callibrate_data(data);
     
-    compare_yaw(data);
-    plot_distance(data);
+    %compare_yaw(data);
+    %plot_distance(data);
+    find_xc(data);
     
+
+end
+
+function find_xc(data)
+% 𝑦̈𝑜𝑏𝑠 =𝑌+𝜔𝑋+𝜔̇𝑥𝑐
+% (yobs - Y - wX)/delt_w
+w = data.ypr.x;
+delt_w = data.gyro.z;
+
+delt_x = cumtrapz(data.accel.x);
+delt_y = cumtrapz(data.accel.y);
+
+xc = (data.accel.y - w.*delt_x)./delt_w;
+
+xc2 = (data.accel.x + w.*delt_y)./(-(delt_w.^2));
+hold on;
+xc(1)
+xc2(1)
+plot(xc)
+plot(xc2)
+hold off;
 
 end
 
