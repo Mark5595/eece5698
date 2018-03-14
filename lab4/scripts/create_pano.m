@@ -6,10 +6,11 @@
 %% Data sources
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 source_dir = '/Users/Andrew/Dropbox/Northeastern/2018 Spring/eece5698/lab4/'
-%images_dir = 'latino_center/calib'
+images_dir = 'latino_center/calib'
 %images_dir = 'brick_wall/landscape'
 %images_dir = 'brick_wall'
-images_dir = 'tromso_night'
+%images_dir = 'tromso_night'
+%images_dir = 'willis'
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% Load images.
