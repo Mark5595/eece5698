@@ -11,6 +11,7 @@ images_dir = 'latino_center/calib'
 %images_dir = 'brick_wall'
 %images_dir = 'tromso_night'
 %images_dir = 'willis'
+images_dir = 'isec'
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% Load images.
@@ -18,9 +19,18 @@ images_dir = 'latino_center/calib'
 buildingDir = fullfile(source_dir, images_dir)
 buildingScene = datastore(buildingDir);
 
+I = readimage(buildingScene, 1);
+
 % Shrink images
 inputSize = [300 300];
 buildingScene.ReadFcn = @(buildingScene)imresize(imread(buildingScene), inputSize);
+
+% Shrink images take 2
+numPoints = 10000;
+tiles = [1 5]
+scale = [8 8 1]
+inputSize = size(I)./scale
+buildingScene.ReadFcn = @(buildingScene)imresize(imread(buildingScene), inputSize(1:2))
 
 % Display images to be stitched
 montage(buildingScene.Files);
@@ -37,7 +47,7 @@ grayImage = rgb2gray(I);
 
 % TODO: Change to harris feature detection?
 %points = detectSURFFeatures(grayImage);
-[yp, xp, ~] = harris(grayImage, 1500, 'tile', [1 3], 'disp');
+[yp, xp, ~] = harris(grayImage, numPoints, 'tile', tiles, 'disp');
 points = [xp yp];
 [features, points] = extractFeatures(grayImage, points);
 
@@ -61,11 +71,12 @@ for n = 2:numImages
     % Detect and extract SURF features for I(n).
     grayImage = rgb2gray(I);
     % points = detectSURFFeatures(grayImage);
-    [yp, xp, ~] = harris(grayImage, 1500, 'tile', [1 3], 'disp');
+    [yp, xp, ~] = harris(grayImage, numPoints, 'tile', tiles, 'disp');
     points = [xp yp];
     [features, points] = extractFeatures(grayImage, points);
 
     % Find correspondences between I(n) and I(n-1).
+    display('Trying to match features')
     indexPairs = matchFeatures(features, featuresPrevious, 'Unique', true);
 
     matchedPoints = points(indexPairs(:,1), :);
