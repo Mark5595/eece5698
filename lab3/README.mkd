@@ -5,5 +5,7 @@ Run with `sudo ./launch_lcm.sh'
 
 
 [NMEA Documentation][Nema Doc]
+[Report][Report]
 
 [Nema Doc]: http://usglobalsat.com/store/downloads/NMEA_commands.pdf
+[Report]: https://github.com/drewtu2/eece5698/blob/master/lab3/report/Presentation.pdf
